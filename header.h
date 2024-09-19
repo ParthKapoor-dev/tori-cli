@@ -1,4 +1,4 @@
-/* TORALIZE HEADERS  */
+/* TORI HEADERS  */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -11,6 +11,9 @@
 
 #define PROXY  "127.0.0.1"
 #define PORT   9050
+#define USERNAME "toraliz"
+#define reqsize sizeof(struct proxy_request)
+#define ressize sizeof(struct proxy_response)
 
 typedef unsigned char int8;
 typedef unsigned short int int16;
@@ -34,3 +37,6 @@ struct proxy_response{
 };
 
 typedef struct proxy_response Res;
+
+Req* request(const char* , const int );
+int main(int , char**);

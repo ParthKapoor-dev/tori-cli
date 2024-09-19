@@ -2,10 +2,29 @@
 
 #include "header.h"
 
+Req* request(const char* destip , const int destport){
+
+  Req* req;
+
+  req = malloc(reqsize);
+
+  req->dstip= inet_addr(destip);
+  req->dstport = htons(destport);
+  req->vn = 4;
+  req->cd = 1;
+  strncpy(req->userid , USERNAME , 8);
+  
+  return req;
+}
+
 int main( int argc , char * argv[]){
   
   char * host;
   int port, soc;
+  Req *req;
+  Res *res;
+  char buf[ressize];
+  int success;
   struct sockaddr_in socket_address;
 
   if(argc < 3){
@@ -31,6 +50,32 @@ int main( int argc , char * argv[]){
   }
 
   printf("Connected to proxy \n");
+  
+  req = request(host , port); 
+  write(soc , req , reqsize);
+
+  memset(buf , 0 , ressize);
+  if(read(soc , buf , ressize) < 1){
+    perror("read");
+    free(req);
+    close(soc);
+    
+    return -1;
+  }
+
+  res = (Res*)buf;
+
+  success = (res->cd == 90);
+  if(!success){
+    fprintf(stderr , "Unable to traverse : %d\n", res->cd);
+    close(soc);
+    free(req);
+
+    return -1;
+  }
+
+  printf("Successfuly Connected through proxy to ->  %s:%d \n" , host , port );
+
   close(soc);
 
   return 0;
